@@ -4,18 +4,17 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu2004
+secrets:
+  - name: dockerhub
 blocks:
   - name: Dockerize
     task:
       jobs:
         - name: Docker build
           commands:
-            - echo $DOCKER_PASSWORD
-            - echo $DOCKER_USERNAME
-            - echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin
-            - 'docker pull $DOCKER_USERNAME/django-markdown-editor:latest || true'
-            - 'docker build --cache-from=$DOCKER_USERNAME/django-markdown-editor:latest -t $DOCKER_USERNAME/django-markdown-editor:latest .'
-            - 'docker push $DOCKER_USERNAME/django-markdown-editor:latest'
+            - 'checkout - echo $DOCKERHUB_PASSWORD - echo $DOCKERHUB_USERNAME - echo $DOCKERHUB_PASSWORD | docker login --username "$DOCKERHUB_USERNAME" --password-stdin - docker pull $DOCKER_USERNAME/django-markdown-editor:latest || true - docker images - docker build --cache-from=$DOCKER_USERNAME/django-markdown-editor:latest -t $DOCKER_USERNAME/django-markdown-editor:latest . - ''docker push $DOCKER_USERNAME/django-markdown-editor:latest'''
+      secrets:
+        - name: dockerhub
       prologue:
         commands:
           - sem-version python 3.9
